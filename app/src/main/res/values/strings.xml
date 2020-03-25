@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Treasure</string>
+    <string name="button">GO!</string>
+    <string name="hello_world">Select a treasure here...</string>
+
+
+    <string name="respond">Button has been clicked</string>
+    
+    <string-array name="numbers">
+        <item>Bethselaminian Backpack;8.507333224490367;47.40830372291337;150</item>
+        <item>Staff of the Forlorn Traveler;8.50649637527772;47.40822299131271;120</item>
+    </string-array>
+</resources>
