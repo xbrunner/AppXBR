@@ -3,6 +3,7 @@
     <string name="button">GO!</string>
     <string name="hello_world">Select a treasure here...</string>
     <string name="coins">You have XXX Coins</string>
+    <string name="item">Item</string>
 
 
 

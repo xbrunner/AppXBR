@@ -23,7 +23,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private Button myButton;
     public TextView coins;
+    public TextView item;
     public int Score = 0;
+    public String GetItem = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+            //Get Item from Spinner
+            GetItem = spinner.getSelectedItem().toString();
+            //item.setText(GetItem);
+
+            Log.d("Blabla", "Blabla" + String.valueOf(GetItem));
+
+
+
+        //Button
         myButton = (Button) findViewById(R.id.button);
         myButton.setOnClickListener(new View.OnClickListener() {
 
@@ -64,18 +75,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         coins.setText("You have: \n " + String.valueOf(Score) + " Coins");
 
         // Codes for opening new intent
-     /* Intent myFirstIntent = new Intent(this, ActivityTwo.class);
+     Intent myFirstIntent = new Intent(this, ActivityTwo.class);
         myFirstIntent.putExtra("key1","ActivityTwo has been launched");
         myFirstIntent.putExtra("key2", 2019);
         startActivity(myFirstIntent);
-    */
-        // Code for opening a web browser
-/*
-        Uri webpage = Uri.parse("http://www.ethz.ch/");
-        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } */
     }
 
     //Read csv:
@@ -89,9 +92,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
        String line = "";
 
            try {
-               //Stap over headers
-               //reader.readLine();
-
                while ( (line = reader.readLine()) != null) {
                    //Log.d("Blabla", "Blabla" +line);
 
@@ -105,9 +105,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                    TreasuresRead.setLatitude(Double.parseDouble(tokens[2]));
                    TreasuresRead.setMaxCoins(Integer.parseInt(tokens[3]));
                    treasures.add(TreasuresRead);
-
                    //Log.d("MyActivity", "Just created: " + treasures);
-
                }
            } catch (IOException e) {
                Log.wtf("MyActivity", "Error reading data file on line" + line, e);
