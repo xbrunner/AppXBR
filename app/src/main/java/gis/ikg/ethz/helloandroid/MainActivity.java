@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         this.updateScore();
 
         //Spinner
-
         final List<String> list = new ArrayList<String>();
 
+        //Insert values from map (csv) to spinner
         for (Map.Entry<String, Treasures> entry : this.treasures.entrySet()) {
             list.add(entry.getValue().getTreasureName());
         }
@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner.setAdapter(adp1);
 
         //Get objects from Activity2
-//        ActivityTwo act = ActivityTwo.getInstanceTwo();
-//        scoreActivity2 = act.currentScore;
+        ActivityTwo act = ActivityTwo.getInstanceTwo();
+        //scoreActivity2 = act.currentScore;
 
 
 
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                    TreasuresRead.setLatitude(Double.parseDouble(tokens[2]));
                    TreasuresRead.setMaxCoins(Integer.parseInt(tokens[3]));
                    treasures.put(TreasuresRead.getTreasureName(), TreasuresRead);
-                   //Log.d("MyActivity", "Just created: " + treasures);
+                   Log.d("MyActivity", "Just created: " + tokens[0] + ","+ tokens[1] + ","+ tokens[2] + "," + tokens[3]);
                }
            } catch (IOException e) {
                Log.wtf("MyActivity", "Error reading data file on line" + line, e);

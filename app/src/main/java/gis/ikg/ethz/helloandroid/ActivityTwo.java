@@ -17,7 +17,8 @@ public class ActivityTwo extends AppCompatActivity {
     public TextView temperature;
     public int currentScore = 0;
     public double currentTemperature = 20.0;
-    private SensorManager mSensorManager = null;
+    private SensorManager SensorManager = null;
+
 
 
 
@@ -86,6 +87,7 @@ public class ActivityTwo extends AppCompatActivity {
 
     }
 
+    //Method to update score
     private void updateTemperature() {
         infoBox.setText("Temperature: \n " + String.valueOf(currentTemperature));
 
