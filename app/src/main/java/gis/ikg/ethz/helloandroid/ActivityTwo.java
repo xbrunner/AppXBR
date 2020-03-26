@@ -16,40 +16,14 @@ public class ActivityTwo extends AppCompatActivity {
     public TextView infoBox;
     public TextView temperature;
     public int currentScore = 0;
+    //public String currentTreasureName = null;
     public double currentTemperature = 20.0;
     private SensorManager SensorManager = null;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_two);
-
-        //Intent
-        Bundle extras = getIntent().getExtras();
-
-        if (extras != null) {
-            String text_value = extras.getString("key1");
-            int number_value = extras.getInt("key2");
-
-            //displayOutput(text_value, number_value);
-        }
-
-        //Get objects from MainActivity
-        MainActivity act = MainActivity.getInstance();
-        Treasures treasures = act.selectedTreasure;
-        act.addScore(treasures.getMaxCoins());
-        currentScore = act.score;
-
-        //Show Info Box
-        infoBox = (TextView)findViewById(R.id.info);
-        this.updateInfoBox();
-
-        //Show Temperature
-        infoBox = (TextView)findViewById(R.id.temperature);
-        this.updateTemperature();
 
 
         //Button
@@ -61,35 +35,25 @@ public class ActivityTwo extends AppCompatActivity {
                 myBackButtonAction();
             }
         });
-    }
 
-    //Get Instance to switch between Activities
-    public static ActivityTwo getInstanceTwo()
-    {
-        return ActivityTwo.instance2;
-    }
+        Intent intent = getIntent();
+        String currentTreasureName = "";
+        currentTreasureName = intent.getStringExtra("currentTreasureName");
+        //Show Info Box
+        infoBox = (TextView)findViewById(R.id.info);
+        infoBox.setText("You choosed : \n " + currentTreasureName);
 
+    }
 
     //Setup Button "GO!"
     private void myBackButtonAction() {
 
             // Opening new intent
-            Intent myFirstIntent = new Intent(this, MainActivity.class);
-            myFirstIntent.putExtra("key1","Back to activity one");
-            myFirstIntent.putExtra("key2", 2019);
-            startActivity(myFirstIntent);
+            Intent backIntent = new Intent(this, MainActivity.class);
+            //myFirstIntent.putExtra("key1","Back to activity one");
+            //myFirstIntent.putExtra("key2", 2019);
+            startActivity(backIntent);
 
         }
 
-    //Method to update score
-    private void updateInfoBox() {
-        infoBox.setText("You have: \n " + String.valueOf(currentScore) + " Coins");
-
-    }
-
-    //Method to update score
-    private void updateTemperature() {
-        infoBox.setText("Temperature: \n " + String.valueOf(currentTemperature));
-
-    }
 }

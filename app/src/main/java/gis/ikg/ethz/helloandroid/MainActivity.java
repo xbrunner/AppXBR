@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +16,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.Attributes;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -24,10 +24,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private Button myButton;
     private Spinner spinner = null;
     public TextView coins;
-    public int score = 0;
-    public int scoreActivity2 = 0;
+    public int score = 20;
+    //public int scoreActivity2 = 0;
     public Treasures selectedTreasure = null;
     private Map<String, Treasures> treasures = new ArrayMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         for (Map.Entry<String, Treasures> entry : this.treasures.entrySet()) {
             list.add(entry.getValue().getTreasureName());
         }
-
+        //Log.d("bla", "bla"+ treasures.get(2));
         spinner = findViewById(R.id.spinner1);
 
         ArrayAdapter<String> adp1 = new ArrayAdapter<String>(this,
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner.setAdapter(adp1);
 
         //Get objects from Activity2
-        ActivityTwo act = ActivityTwo.getInstanceTwo();
+        //ActivityTwo act = ActivityTwo.getInstanceTwo();
         //scoreActivity2 = act.currentScore;
 
 
@@ -75,11 +76,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
-    //Get Instance to switch between Activities
-    public static MainActivity getInstance()
-    {
-        return MainActivity.instance;
-    }
+//    //Get Instance to switch between Activities
+//    public static MainActivity getInstance()
+//    {
+//        return MainActivity.instance;
+//    }
 
     //Setup Button "GO!"
     private void myButtonAction() {
@@ -91,10 +92,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Intent to Activity two if object is not already founded
         if(!this.selectedTreasure.isFound()) {
             // Opening new intent
-            Intent myFirstIntent = new Intent(this, ActivityTwo.class);
-            myFirstIntent.putExtra("key1","ActivityTwo has been launched");
-            myFirstIntent.putExtra("key2", 2019);
-            startActivity(myFirstIntent);
+            Intent Intent = new Intent(this, ActivityTwo.class);
+            Intent.putExtra("currentTreasureName", selectedTreasure.getTreasureName());
+            startActivity(Intent);
+
         } else {
             Toast.makeText(getApplicationContext(), "Treasure already founded!", Toast.LENGTH_SHORT).show(); //Toast to show if the object is already found
         }
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
     //Method to update score
     private void updateScore() {
-        coins.setText("You have: \n " + String.valueOf(score + scoreActivity2) + " Coins");
+        coins.setText("You have: \n " + String.valueOf(score) + " Coins");
     }
 
     //Read csv:
