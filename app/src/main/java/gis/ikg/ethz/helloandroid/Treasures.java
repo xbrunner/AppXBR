@@ -1,11 +1,11 @@
 package gis.ikg.ethz.helloandroid;
 
 public class Treasures {
-    private String TreasureName;
-    private double Longitude;
-    private double Latitude;
-    private int MaxCoins;
-    private boolean found = true;
+    private String TreasureName; //from csv
+    private double Longitude; //from csv
+    private double Latitude; //from csv
+    private int MaxCoins; //from csv
+    private boolean found = false; //false if not already found (Changed in Activity 2)
 
     public String getTreasureName() {
         return TreasureName;
