@@ -5,6 +5,7 @@ public class Treasures {
     private double Longitude;
     private double Latitude;
     private int MaxCoins;
+    private boolean found = true;
 
     public String getTreasureName() {
         return TreasureName;
@@ -37,4 +38,6 @@ public class Treasures {
     public void setMaxCoins(int maxCoins) {
         MaxCoins = maxCoins;
     }
+
+    public boolean isFound() { return this.found; }
 }

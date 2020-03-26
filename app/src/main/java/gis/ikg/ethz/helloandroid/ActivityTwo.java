@@ -20,6 +20,10 @@ public class ActivityTwo extends AppCompatActivity {
             displayOutput(text_value, number_value);
         }
 
+
+        MainActivity act = MainActivity.getInstance();
+        act.addScore(100);
+        Treasures treasure = act.selectedTreasure;
     }
 
     private void displayOutput(String text, int number) {

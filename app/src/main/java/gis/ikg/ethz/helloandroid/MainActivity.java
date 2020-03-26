@@ -2,6 +2,7 @@ package gis.ikg.ethz.helloandroid;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -15,20 +16,25 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Math.round;
 
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    private static MainActivity instance = null;
     private Button myButton;
+    private Spinner spinner = null;
     public TextView coins;
     public TextView item;
     public int Score = 0;
-    public String GetItem = null;
+    public Treasures selectedTreasure = null;
+    private Map<String, Treasures> treasures = new ArrayMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MainActivity.instance = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -37,19 +43,37 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         //Coins score
         coins = (TextView)findViewById(R.id.coins);
-        coins.setText("You have: \n " + String.valueOf(Score) + " Coins");
+        this.updateScore();
 
         //Spinner
-        Spinner spinner = findViewById(R.id.spinner1);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.numbers, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
 
-            //Get Item from Spinner
-            GetItem = spinner.getSelectedItem().toString();
+        final List<String> list = new ArrayList<String>();
+
+        for (Map.Entry<String, Treasures> entry : this.treasures.entrySet()) {
+            list.add(entry.getValue().getTreasureName());
+        }
+
+
+        //android.R.layout.simple_list_item_1, list);
+        //adp1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //sp1.setAdapter(adp1);
+
+
+        spinner = findViewById(R.id.spinner1);
+
+        ArrayAdapter<String> adp1 = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, list);
+        adp1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adp1);
+
+        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array., android.R.layout.simple_spinner_item);
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //spinner.setAdapter(adapter);
+
+
             //item.setText(GetItem);
 
-            Log.d("Blabla", "Blabla" + String.valueOf(GetItem));
+            //Log.d("Blabla", "Blabla" + String.valueOf(treasureName));
 
 
 
@@ -65,24 +89,42 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
+    public static MainActivity getInstance()
+    {
+        return MainActivity.instance;
+    }
+
     private void myButtonAction() {
+
+        //Get Item from Spinner
+        String treasureName = spinner.getSelectedItem().toString();
+        selectedTreasure = this.treasures.get(treasureName);
+
         // TODO implement your button response here
         TextView box = (TextView) findViewById(R.id.textbox);
         box.setText(getResources().getString(R.string.respond));
 
-        //Change score
-        Score = Score + 10;
-        coins.setText("You have: \n " + String.valueOf(Score) + " Coins");
+        if(!this.selectedTreasure.isFound()) {
+            // Codes for opening new intent
+            Intent myFirstIntent = new Intent(this, ActivityTwo.class);
+            myFirstIntent.putExtra("key1","ActivityTwo has been launched");
+            myFirstIntent.putExtra("key2", 2019);
+            startActivity(myFirstIntent);
+        } else {
+            Toast.makeText(getApplicationContext(), "Treasure already found !", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        // Codes for opening new intent
-     Intent myFirstIntent = new Intent(this, ActivityTwo.class);
-        myFirstIntent.putExtra("key1","ActivityTwo has been launched");
-        myFirstIntent.putExtra("key2", 2019);
-        startActivity(myFirstIntent);
+    public void addScore(int scoreAdd) {
+        this.Score += scoreAdd;
+        this.updateScore();
+    }
+
+    private void updateScore() {
+        coins.setText("You have: \n " + String.valueOf(Score) + " Coins");
     }
 
     //Read csv:
-    private List<Treasures> treasures = new ArrayList<>();
     private void readTreasuresData() {
        InputStream is = getResources().openRawResource(R.raw.treasures);
        BufferedReader reader = new BufferedReader(
@@ -104,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                    TreasuresRead.setLongitude(Double.parseDouble(tokens[1]));
                    TreasuresRead.setLatitude(Double.parseDouble(tokens[2]));
                    TreasuresRead.setMaxCoins(Integer.parseInt(tokens[3]));
-                   treasures.add(TreasuresRead);
+                   treasures.put(TreasuresRead.getTreasureName(), TreasuresRead);
                    //Log.d("MyActivity", "Just created: " + treasures);
                }
            } catch (IOException e) {
