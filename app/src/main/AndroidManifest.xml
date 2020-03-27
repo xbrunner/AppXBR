@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="gis.ikg.ethz.helloandroid">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission. ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-feature android:name="android.hardware.sensor.accelerometer"
                   android:required="true" />
 
@@ -14,6 +18,10 @@
             android:theme="@style/AppTheme">
 
         <activity android:name=".ActivityTwo">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+            </intent-filter>
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -22,6 +30,8 @@
 
             </intent-filter>
         </activity>
+
+
     </application>
 
 

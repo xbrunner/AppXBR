@@ -16,23 +16,24 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import androidx.core.app.ActivityCompat;
 import java.util.jar.Attributes;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private static MainActivity instance = null;
+    //private static MainActivity instance = null;
     private Button myButton;
     private Spinner spinner = null;
     public TextView coins;
-    public int score = 20;
-    //public int scoreActivity2 = 0;
+    private int score = 0;
+    private int currentScore = 0;
     public Treasures selectedTreasure = null;
     private Map<String, Treasures> treasures = new ArrayMap<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MainActivity.instance = this;
+        //MainActivity.instance = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         //Coins score
         coins = (TextView)findViewById(R.id.coins);
-        this.updateScore();
+        //this.updateScore();
 
         //Spinner
         final List<String> list = new ArrayList<String>();
@@ -74,6 +75,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+        //Backintent
+        Intent intentBack = getIntent();
+        currentScore = intentBack.getIntExtra("currentTreasureMaxCoins", 0);
+        score += currentScore;
+
+
     }
 
 //    //Get Instance to switch between Activities
@@ -94,21 +101,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             // Opening new intent
             Intent Intent = new Intent(this, ActivityTwo.class);
             Intent.putExtra("currentTreasureName", selectedTreasure.getTreasureName());
+            Intent.putExtra("currentLongitude", selectedTreasure.getLongitude());
+            Intent.putExtra("currentLatitude", selectedTreasure.getLatitude());
+            Intent.putExtra("currentTreasureMaxCoins", selectedTreasure.getMaxCoins());
+            Intent.putExtra("currentTreasureIsFound", selectedTreasure.isFound());
+            Intent.putExtra("score", score);
             startActivity(Intent);
+
+
 
         } else {
             Toast.makeText(getApplicationContext(), "Treasure already founded!", Toast.LENGTH_SHORT).show(); //Toast to show if the object is already found
         }
     }
 
-    //Score
-    public void addScore(int scoreAdd) {
-        this.score += scoreAdd;
-        this.updateScore();
-    }
+
     //Method to update score
-    private void updateScore() {
-        coins.setText("You have: \n " + String.valueOf(score) + " Coins");
+    public void updateScore() {
+        coins.setText("You have: \n " + String.valueOf(score) + " COINS");
     }
 
     //Read csv:
@@ -150,4 +160,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+
+    @Override
+    protected void onStart() {
+        //addProximityAlert("eth hoengg main space", 47.408039, 8.507212, 50);
+
+        this.updateScore();
+
+        //this.updateScore();
+        super.onStart();
+
+    }
+
 }

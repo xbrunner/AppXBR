@@ -5,7 +5,7 @@ public class Treasures {
     private double Longitude; //from csv
     private double Latitude; //from csv
     private int MaxCoins; //from csv
-    private boolean found = false; //false if not already found (Changed in Activity 2)
+    private boolean found = false; //false if not already found
 
     public String getTreasureName() {
         return TreasureName;
@@ -40,4 +40,6 @@ public class Treasures {
     }
 
     public boolean isFound() { return this.found; }
+
+    public void  alreadyFound() { this.found = true; }
 }
