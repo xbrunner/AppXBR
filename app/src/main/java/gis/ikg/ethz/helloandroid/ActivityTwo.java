@@ -4,13 +4,18 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -26,7 +31,7 @@ import android.os.Bundle;
  */
 
 
-public class ActivityTwo extends AppCompatActivity {
+public class ActivityTwo extends AppCompatActivity implements SensorEventListener {
 
     private static ActivityTwo instance2 = null;
     private Button backButton;
@@ -38,13 +43,9 @@ public class ActivityTwo extends AppCompatActivity {
     public TextView avgSpeedBox;
     public double currentTemperature = 20.0;
     public double currentDistance = 100;
-    public double currentLongitude = 0;
-    public double currentLatitude = 0;
-    public double currentSpeed = 0;
+    public double currentSpeed = 0; //km/h
+    public double currentTime = 1; //s
     public double currentAvgSpeed = 0;
-    public double cumulateAvgSpeed = 0;
-    public double timeZero = 1;
-    Location currentLocation = new Location("currentLocation");
     public String treasureName = null;
     Location treasureLocation = new Location("treasureLocation");
 
@@ -58,6 +59,14 @@ public class ActivityTwo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_two);
 
+
+        //Set id for boxes
+        infoBox = (TextView)findViewById(R.id.infoBox);
+        distanceBox = (TextView)findViewById(R.id.distanceBox);
+        temperatureBox = (TextView)findViewById(R.id.temperatureBox);
+        speedBox = (TextView)findViewById(R.id.speedBox);
+        avgSpeedBox = (TextView)findViewById(R.id.avgSpeedBox);
+
         //get variables from Intent
         Intent intent = getIntent();
         String treasureName = intent.getStringExtra("currentTreasureName");
@@ -65,6 +74,8 @@ public class ActivityTwo extends AppCompatActivity {
         Double treasureLatitude = intent.getDoubleExtra("currentLatitude", 0);
         Integer treasureMaxCoins = intent.getIntExtra("currentTreasureMaxCoins", 0);
         Boolean currentTreasureIsFound = intent.getBooleanExtra("CurrentTreasureIsFound", false);
+
+        infoBox.setText("You choosed :  " + treasureName + "\n You have : " ); //+ Integer.toString(score) +" COINS");
 
         //Set location of treasure
         treasureLocation.setLongitude(treasureLongitude);
@@ -83,28 +94,38 @@ public class ActivityTwo extends AppCompatActivity {
         //Location
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
+
             @Override
             public void onLocationChanged(Location currentLocation) {
 
                     // Calculate location
-                    currentLongitude = currentLocation.getLongitude();
-                    currentLatitude = currentLocation.getLatitude();
+                    //currentLongitude = currentLocation.getLongitude();
+                    //currentLatitude = currentLocation.getLatitude();
+
+
+                    // Calculate time
+                    Chronometer simpleChronometer = (Chronometer) findViewById(R.id.chronometer); // initiate a chronometer
+                    simpleChronometer.start(); // start a chronometer
+
+                    currentTime = (double) ((SystemClock.elapsedRealtime() - simpleChronometer.getBase())/1000);
 
                     // Calculate distance
                     currentDistance = currentLocation.distanceTo(treasureLocation);
                     distanceBox.setText("Distance to treasure: " + Math.round(currentDistance) + " meters");
+
 
                     //Calculate current speed
                     currentSpeed = currentLocation.getSpeed();
                     speedBox.setText("Your speed: " + Math.round(currentSpeed) + " km/h");
 
                      //Calculate average speed
-                     currentSpeed = currentLocation.getSpeed();
-                     cumulateAvgSpeed += currentSpeed;
-                     //currentAvgSpeed = cumulateAvgSpeed/ /.getTime()-
+                     currentAvgSpeed += (currentSpeed);
+                     //urrentAvgSpeed = cumulateAvgSpeed/ /.getTime()-
+//
 
-                     speedBox.setText("Your speed: " + Math.round(currentSpeed) + " km/h");
-
+                if (currentTime > 0) {
+                     avgSpeedBox.setText("Your average speed: " + Math.round(currentAvgSpeed/currentTime) + "km/h");
+                } else avgSpeedBox.setText("Your average speed: 0 km/h" );
             }
 
             @Override
@@ -123,6 +144,7 @@ public class ActivityTwo extends AppCompatActivity {
             }
 
         };
+
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
@@ -130,27 +152,11 @@ public class ActivityTwo extends AppCompatActivity {
             return;
         }
 
-            //Calculate location every 1 second
-            locationManager.requestLocationUpdates("gps", 1000, 0, locationListener);
-
-        // Calculate distance betwenn
-
-
-
-
+        //Calculate location every 1 second
+        locationManager.requestLocationUpdates("gps", 1000, 0, locationListener);
 
 
         Integer score = intent.getIntExtra("score", 0);
-
-        //Set id for boxes
-        infoBox = (TextView)findViewById(R.id.info);
-        distanceBox = (TextView)findViewById(R.id.distanceBox);
-        temperatureBox = (TextView)findViewById(R.id.temperatureBox);
-        speedBox = (TextView)findViewById(R.id.speedBox);
-        avgSpeedBox = (TextView)findViewById(R.id.avgSpeedBox);
-        //infoBox.setText("You choosed :  " + currentTreasureName + "\n You have : " + Integer.toString(score) +" COINS");
-
-
 
         //Update score
         currentScore = score+treasureMaxCoins;
@@ -170,10 +176,6 @@ public class ActivityTwo extends AppCompatActivity {
             //Stop to calculate position
             stopCalculatePosition = true;
         }
-
-
-
-
 
 
     @Override
@@ -197,4 +199,13 @@ public void calculateDistance() {
 }
 
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        //Temperature
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 }
