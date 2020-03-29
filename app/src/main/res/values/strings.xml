@@ -2,10 +2,13 @@
     <string name="app_name">Treasure</string>
     <string name="button">GO!</string>
     <string name="backButton">GO!</string>
-    <string name="hello_world">Select a treasure here...</string>
+    <string name="selectBox">Select a treasure here...</string>
     <string name="coins">You have XXX Coins</string>
-    <string name="info">Info Item</string>
-    <string name="temperature">Show temperature here!</string>
+    <string name="distanceBox">Show distance here</string>
+    <string name="temperatureBox">Show temperature here!</string>
+    <string name="infoBox">Object name and score here!</string>
+    <string name="speedBox">See speed here!</string>
+    <string name="avgSpeedBox">See average speed here!</string>
 
 
 

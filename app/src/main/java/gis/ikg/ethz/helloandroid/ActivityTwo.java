@@ -32,14 +32,25 @@ public class ActivityTwo extends AppCompatActivity {
     private Button backButton;
     private int currentScore = 0;
     public TextView infoBox;
-    public TextView temperature;
-    //public String currentTreasureName = null;
+    public TextView distanceBox;
+    public TextView temperatureBox;
+    public TextView speedBox;
+    public TextView avgSpeedBox;
     public double currentTemperature = 20.0;
-    private SensorManager SensorManager = null;
-    public boolean stopCalculatePosition = false;
+    public double currentDistance = 100;
+    public double currentLongitude = 0;
+    public double currentLatitude = 0;
+    public double currentSpeed = 0;
+    public double currentAvgSpeed = 0;
+    public double cumulateAvgSpeed = 0;
+    public double timeZero = 1;
+    Location currentLocation = new Location("currentLocation");
+    public String treasureName = null;
+    Location treasureLocation = new Location("treasureLocation");
 
-    private LocationManager locationManager;
+  private LocationManager locationManager;
     private LocationListener locationListener;
+    public boolean stopCalculatePosition = false;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -49,11 +60,15 @@ public class ActivityTwo extends AppCompatActivity {
 
         //get variables from Intent
         Intent intent = getIntent();
-        String currentTreasureName = intent.getStringExtra("currentTreasureName");
-        Double currentTreasureLongitude = intent.getDoubleExtra("currentLongitude", 0);
-        Double currentTreasureLatitude = intent.getDoubleExtra("currentLatitude", 0);
-        Integer currentTreasureMaxCoins = intent.getIntExtra("currentTreasureMaxCoins", 0);
+        String treasureName = intent.getStringExtra("currentTreasureName");
+        Double treasureLongitude = intent.getDoubleExtra("currentLongitude", 0);
+        Double treasureLatitude = intent.getDoubleExtra("currentLatitude", 0);
+        Integer treasureMaxCoins = intent.getIntExtra("currentTreasureMaxCoins", 0);
         Boolean currentTreasureIsFound = intent.getBooleanExtra("CurrentTreasureIsFound", false);
+
+        //Set location of treasure
+        treasureLocation.setLongitude(treasureLongitude);
+        treasureLocation.setLatitude(treasureLatitude);
 
         //Button
         backButton = (Button) findViewById(R.id.backButton);
@@ -69,10 +84,26 @@ public class ActivityTwo extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(Location currentLocation) {
 
-                    infoBox.setText("MyLocation :  Lon" + location.getLongitude() + "Lat" + location.getLatitude());
+                    // Calculate location
+                    currentLongitude = currentLocation.getLongitude();
+                    currentLatitude = currentLocation.getLatitude();
 
+                    // Calculate distance
+                    currentDistance = currentLocation.distanceTo(treasureLocation);
+                    distanceBox.setText("Distance to treasure: " + Math.round(currentDistance) + " meters");
+
+                    //Calculate current speed
+                    currentSpeed = currentLocation.getSpeed();
+                    speedBox.setText("Your speed: " + Math.round(currentSpeed) + " km/h");
+
+                     //Calculate average speed
+                     currentSpeed = currentLocation.getSpeed();
+                     cumulateAvgSpeed += currentSpeed;
+                     //currentAvgSpeed = cumulateAvgSpeed/ /.getTime()-
+
+                     speedBox.setText("Your speed: " + Math.round(currentSpeed) + " km/h");
 
             }
 
@@ -99,8 +130,11 @@ public class ActivityTwo extends AppCompatActivity {
             return;
         }
 
-
+            //Calculate location every 1 second
             locationManager.requestLocationUpdates("gps", 1000, 0, locationListener);
+
+        // Calculate distance betwenn
+
 
 
 
@@ -108,14 +142,18 @@ public class ActivityTwo extends AppCompatActivity {
 
         Integer score = intent.getIntExtra("score", 0);
 
-        //Show Info Box
+        //Set id for boxes
         infoBox = (TextView)findViewById(R.id.info);
+        distanceBox = (TextView)findViewById(R.id.distanceBox);
+        temperatureBox = (TextView)findViewById(R.id.temperatureBox);
+        speedBox = (TextView)findViewById(R.id.speedBox);
+        avgSpeedBox = (TextView)findViewById(R.id.avgSpeedBox);
         //infoBox.setText("You choosed :  " + currentTreasureName + "\n You have : " + Integer.toString(score) +" COINS");
 
 
 
         //Update score
-        currentScore = score+currentTreasureMaxCoins;
+        currentScore = score+treasureMaxCoins;
 
     }
 
@@ -138,7 +176,6 @@ public class ActivityTwo extends AppCompatActivity {
 
 
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
@@ -155,7 +192,9 @@ public class ActivityTwo extends AppCompatActivity {
 //        return newScore;
 //
 //    }
-
+public void calculateDistance() {
+    currentDistance = 0;
+}
 
 
 }
