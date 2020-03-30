@@ -11,13 +11,13 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Build;
 import android.os.SystemClock;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Chronometer;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,23 +41,43 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
     private TextView temperatureBox;
     private TextView speedBox;
     private TextView avgSpeedBox;
+    private ImageView arrow;
     private double currentDistance = 100;
     private double currentSpeed = 0; //km/h
     private double currentTime = 1; //s
     private double currentAvgSpeed = 0;
     private double currentTemperature = 20;
+    //private float currentOrientation = 0;
+    private float currentDegree = 0;
+
+    float[] mGravity; // accelerometer
+    float[] mGeomagnetic; // magnetometer
+    float[] rMat = new float[9];
+    float[] iMat = new float[9];
+    float[] orientation = new float[3];
+    float currentAzimuth;
+    float azimutTreasure;
+    boolean haveAccelerometer = false;
+    boolean haveMagnetometer = false;
+
     private Location treasureLocation = new Location("treasureLocation");
     private LocationManager locationManager;
     private LocationListener locationListener;
     private SensorManager sensorManager;
     private Sensor sensorTemperature;
-    private Sensor sensorOrientation;
+    private Sensor sensorAccelerometer;
+    private Sensor sensorMagnetometer;
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_two);
+
+        //Show direction arrow
+
+
 
 
         //Set id for boxes
@@ -66,6 +86,7 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
         temperatureBox = (TextView)findViewById(R.id.temperatureBox);
         speedBox = (TextView)findViewById(R.id.speedBox);
         avgSpeedBox = (TextView)findViewById(R.id.avgSpeedBox);
+        arrow = (ImageView)findViewById(R.id.arrow);
 
         //get variables from Intent
         Intent intent = getIntent();
@@ -115,6 +136,9 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
                     //Calculate average speed
                     currentAvgSpeed += (currentSpeed);
 
+                    //Calculate Azimut Position treasure
+                    azimutTreasure = currentLocation.bearingTo(treasureLocation);
+
 
                 if (currentTime > 0) {
                      avgSpeedBox.setText("Your average speed: " + Math.round(currentAvgSpeed/currentTime) + "km/h");
@@ -147,13 +171,6 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
             return;
         }
 
-        //Sensor
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensorTemperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        sensorOrientation = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        sensorManager.registerListener(this, sensorTemperature, SensorManager.SENSOR_DELAY_NORMAL);
-
-
 
         //Calculate location every 1 second
         locationManager.requestLocationUpdates("gps", 1000, 0, locationListener);
@@ -163,6 +180,19 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
 
         //Update score
         currentScore = score+treasureMaxCoins;
+
+        //Sensor
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        sensorTemperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorMagnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        sensorManager.registerListener(this, sensorTemperature, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+
 
     }
 
@@ -196,12 +226,48 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
 //
 //    }
 
+
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         //Temperature
 
-        currentTemperature = event.values[0];
-        temperatureBox.setText("Temperature: "  + Math.round(currentTemperature));
+
+        if (event.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+            currentTemperature = event.values[0];
+            temperatureBox.setText("Temperature: " + Math.round(currentTemperature) + "°C");
+
+
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mGravity = event.values;
+
+
+        }
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+            mGeomagnetic = event.values;
+
+        if (mGravity != null && mGeomagnetic != null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+
+            if (SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic)) {
+
+                // orientation contains azimut, pitch and roll
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                currentAzimuth = orientation[0];
+
+
+            }
+            RotateAnimation rotateAnimation = new RotateAnimation(azimutTreasure-currentAzimuth,azimutTreasure-currentAzimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            rotateAnimation.setDuration(100);
+            rotateAnimation.setFillAfter(true);
+            arrow.setAnimation(rotateAnimation);
+
+        }
+
     }
 
     @Override
