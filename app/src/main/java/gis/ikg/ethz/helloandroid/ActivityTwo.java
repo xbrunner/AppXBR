@@ -36,22 +36,22 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
     private static ActivityTwo instance2 = null;
     private Button backButton;
     private int currentScore = 0;
-    public TextView infoBox;
-    public TextView distanceBox;
-    public TextView temperatureBox;
-    public TextView speedBox;
-    public TextView avgSpeedBox;
-    public double currentTemperature = 20.0;
-    public double currentDistance = 100;
-    public double currentSpeed = 0; //km/h
-    public double currentTime = 1; //s
-    public double currentAvgSpeed = 0;
-    public String treasureName = null;
-    Location treasureLocation = new Location("treasureLocation");
-
-  private LocationManager locationManager;
+    private TextView infoBox;
+    private TextView distanceBox;
+    private TextView temperatureBox;
+    private TextView speedBox;
+    private TextView avgSpeedBox;
+    private double currentDistance = 100;
+    private double currentSpeed = 0; //km/h
+    private double currentTime = 1; //s
+    private double currentAvgSpeed = 0;
+    private double currentTemperature = 20;
+    private Location treasureLocation = new Location("treasureLocation");
+    private LocationManager locationManager;
     private LocationListener locationListener;
-    public boolean stopCalculatePosition = false;
+    private SensorManager sensorManager;
+    private Sensor sensorTemperature;
+    private Sensor sensorOrientation;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -75,7 +75,7 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
         Integer treasureMaxCoins = intent.getIntExtra("currentTreasureMaxCoins", 0);
         Boolean currentTreasureIsFound = intent.getBooleanExtra("CurrentTreasureIsFound", false);
 
-        infoBox.setText("You choosed :  " + treasureName + "\n You have : " ); //+ Integer.toString(score) +" COINS");
+        infoBox.setText("You choose :  " + treasureName + "\n You have : " ); //+ Integer.toString(score) +" COINS");
 
         //Set location of treasure
         treasureLocation.setLongitude(treasureLongitude);
@@ -98,30 +98,23 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
             @Override
             public void onLocationChanged(Location currentLocation) {
 
-                    // Calculate location
-                    //currentLongitude = currentLocation.getLongitude();
-                    //currentLatitude = currentLocation.getLatitude();
-
 
                     // Calculate time
                     Chronometer simpleChronometer = (Chronometer) findViewById(R.id.chronometer); // initiate a chronometer
                     simpleChronometer.start(); // start a chronometer
-
                     currentTime = (double) ((SystemClock.elapsedRealtime() - simpleChronometer.getBase())/1000);
 
                     // Calculate distance
                     currentDistance = currentLocation.distanceTo(treasureLocation);
                     distanceBox.setText("Distance to treasure: " + Math.round(currentDistance) + " meters");
 
-
                     //Calculate current speed
                     currentSpeed = currentLocation.getSpeed();
                     speedBox.setText("Your speed: " + Math.round(currentSpeed) + " km/h");
 
-                     //Calculate average speed
-                     currentAvgSpeed += (currentSpeed);
-                     //urrentAvgSpeed = cumulateAvgSpeed/ /.getTime()-
-//
+                    //Calculate average speed
+                    currentAvgSpeed += (currentSpeed);
+
 
                 if (currentTime > 0) {
                      avgSpeedBox.setText("Your average speed: " + Math.round(currentAvgSpeed/currentTime) + "km/h");
@@ -145,12 +138,22 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
 
         };
 
+
+
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
             },10 );
             return;
         }
+
+        //Sensor
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorTemperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        sensorOrientation = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        sensorManager.registerListener(this, sensorTemperature, SensorManager.SENSOR_DELAY_NORMAL);
+
+
 
         //Calculate location every 1 second
         locationManager.requestLocationUpdates("gps", 1000, 0, locationListener);
@@ -173,8 +176,6 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
             //myFirstIntent.putExtra("key2", 2019);
             startActivity(backIntent);
 
-            //Stop to calculate position
-            stopCalculatePosition = true;
         }
 
 
@@ -194,14 +195,13 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
 //        return newScore;
 //
 //    }
-public void calculateDistance() {
-    currentDistance = 0;
-}
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         //Temperature
+
+        currentTemperature = event.values[0];
+        temperatureBox.setText("Temperature: "  + Math.round(currentTemperature));
     }
 
     @Override

@@ -5,9 +5,39 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ActivityTwo">
+        tools:context=".ActivityTwo"><![CDATA[
     @+id/button"
 
+
+
+
+    @+id/button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
+    android:text="@string/button"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.498"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.59" />
+
+
+
+
+    ]]>
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="?attr/actionModeBackground"
+            android:id="@+id/imageView"
+            android:background="@drawable/background" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
     <TextView
             android:id="@+id/temperatureBox"
             android:layout_width="wrap_content"
@@ -71,5 +101,13 @@
             app:layout_constraintBottom_toTopOf="@+id/temperatureBox"
             app:layout_constraintTop_toBottomOf="@+id/avgSpeedBox" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp" app:srcCompat="@drawable/arrow_treasure"
+            android:id="@+id/arrow"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/temperatureBox"
+            app:layout_constraintBottom_toTopOf="@+id/backButton"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
