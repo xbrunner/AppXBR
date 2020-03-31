@@ -29,6 +29,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     ]]>
     <ImageView
             android:layout_width="wrap_content"
@@ -42,72 +61,94 @@
             android:id="@+id/temperatureBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:textSize="20sp"
             android:text="@string/temperatureBox"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
+            app:layout_constraintStart_toEndOf="@+id/imageView4"
+            app:layout_constraintTop_toBottomOf="@+id/arrow" app:layout_constraintBottom_toTopOf="@+id/backButton"
+            app:layout_constraintVertical_bias="0.282"/>
     <TextView
             android:id="@+id/speedBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/speedBox"
             android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toTopOf="@+id/avgSpeedBox"/>
+            app:layout_constraintBottom_toTopOf="@+id/backButton" app:layout_constraintStart_toEndOf="@+id/imageView5"
+            app:layout_constraintTop_toBottomOf="@+id/arrow"/>
     <Button
             android:text="Back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:id="@+id/backButton" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+            android:id="@+id/backButton"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
     <TextView
             android:text="@string/infoBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:id="@+id/infoBox" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+            android:id="@+id/infoBox"
+            app:layout_constraintTop_toTopOf="@+id/imageView"
+            app:layout_constraintStart_toEndOf="@+id/imageView2" android:layout_marginTop="16dp"/>
     <TextView
             android:text="@string/avgSpeedBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/avgSpeedBox"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/temperatureBox" android:layout_marginBottom="116dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintStart_toStartOf="@+id/speedBox" app:layout_constraintTop_toBottomOf="@+id/speedBox"
+    />
     <TextView
             android:text="@string/distanceBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:id="@+id/distanceBox"
-            app:layout_constraintTop_toBottomOf="@+id/infoBox" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
+            app:layout_constraintTop_toBottomOf="@+id/arrow"
+            app:layout_constraintBottom_toTopOf="@+id/temperatureBox"
+            app:layout_constraintStart_toEndOf="@+id/imageView3"/>
     <Chronometer
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:id="@+id/chronometer"
-            app:layout_constraintBottom_toTopOf="@+id/temperatureBox"
-            app:layout_constraintTop_toBottomOf="@+id/avgSpeedBox" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/infoBox"/>
     <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp" app:srcCompat="@drawable/arrow_treasure"
+            android:layout_width="120dp"
+            android:layout_height="120dp" app:srcCompat="@drawable/arrow_treasure"
             android:id="@+id/arrow"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/temperatureBox"
-            app:layout_constraintBottom_toTopOf="@+id/backButton"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/backButton" app:layout_constraintVertical_bias="0.193"/>
+    <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp" app:srcCompat="@drawable/ic_information"
+            android:id="@+id/imageView2"
+            app:layout_constraintTop_toTopOf="@+id/infoBox"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toTopOf="@+id/chronometer"/>
+    <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/ic_distance"
+            android:id="@+id/imageView3"
+            app:layout_constraintTop_toTopOf="@+id/distanceBox"
+            app:layout_constraintBottom_toBottomOf="@+id/distanceBox" app:layout_constraintStart_toStartOf="parent"/>
+    <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp" app:srcCompat="@drawable/ic_temperature"
+            android:id="@+id/imageView4"
+            app:layout_constraintTop_toTopOf="@+id/temperatureBox" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/temperatureBox"/>
+    <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp" app:srcCompat="@drawable/ic_speed"
+            android:id="@+id/imageView5"
+            app:layout_constraintTop_toTopOf="@+id/speedBox"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="@+id/avgSpeedBox"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -36,29 +36,25 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
     private static ActivityTwo instance2 = null;
     private Button backButton;
     private int currentScore = 0;
+
     private TextView infoBox;
     private TextView distanceBox;
     private TextView temperatureBox;
     private TextView speedBox;
     private TextView avgSpeedBox;
     private ImageView arrow;
+
     private double currentDistance = 100;
     private double currentSpeed = 0; //km/h
     private double currentTime = 1; //s
     private double currentAvgSpeed = 0;
     private double currentTemperature = 20;
-    //private float currentOrientation = 0;
-    private float currentDegree = 0;
 
-    float[] mGravity; // accelerometer
-    float[] mGeomagnetic; // magnetometer
-    float[] rMat = new float[9];
-    float[] iMat = new float[9];
-    float[] orientation = new float[3];
-    float currentAzimuth;
-    float azimutTreasure;
-    boolean haveAccelerometer = false;
-    boolean haveMagnetometer = false;
+
+    private float[] mGravity; // accelerometer
+    private float[] mGeomagnetic; // magnetometer
+    private float currentAzimuth;
+    private float azimutTreasure;
 
     private Location treasureLocation = new Location("treasureLocation");
     private LocationManager locationManager;
@@ -96,7 +92,7 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
         Integer treasureMaxCoins = intent.getIntExtra("currentTreasureMaxCoins", 0);
         Boolean currentTreasureIsFound = intent.getBooleanExtra("CurrentTreasureIsFound", false);
 
-        infoBox.setText("You choose :  " + treasureName + "\n You have : " ); //+ Integer.toString(score) +" COINS");
+        infoBox.setText(" " + treasureName + "\n You have : " + Integer.toString(currentScore) +" COINS");
 
         //Set location of treasure
         treasureLocation.setLongitude(treasureLongitude);
@@ -225,8 +221,6 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
 //        return newScore;
 //
 //    }
-
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {

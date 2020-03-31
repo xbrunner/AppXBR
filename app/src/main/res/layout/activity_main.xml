@@ -65,6 +65,12 @@
             android:textSize="20sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp" app:srcCompat="@drawable/ic_treasure2"
+            android:id="@+id/imageView6"
+            app:layout_constraintBottom_toTopOf="@+id/selectBox" app:layout_constraintStart_toStartOf="@+id/selectBox"
+            app:layout_constraintEnd_toEndOf="@+id/selectBox"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
