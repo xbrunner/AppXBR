@@ -41,5 +41,7 @@ public class Treasures {
 
     public boolean isFound() { return this.found; }
 
-    public void  alreadyFound() { this.found = true; }
+    public void  setFound() { this.found = true; }
+
+    public void  setFound(Boolean found) { this.found = found; }
 }
