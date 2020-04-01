@@ -28,9 +28,6 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintVertical_bias="0.59" />
-
-
-
     <TextView
         android:id="@+id/selectBox"
         android:layout_width="wrap_content"
@@ -71,6 +68,4 @@
             android:id="@+id/imageView6"
             app:layout_constraintBottom_toTopOf="@+id/selectBox" app:layout_constraintStart_toStartOf="@+id/selectBox"
             app:layout_constraintEnd_toEndOf="@+id/selectBox"/>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

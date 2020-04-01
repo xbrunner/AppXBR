@@ -11,8 +11,6 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -25,16 +23,21 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * This activity provides if the user found the Treasure if Dist(User,Treasure) < 5 meter
- * The measure of position, orientation, temperature, speed and average speed are measured
- *  Dist(User,Treasure) < 5 meter has to be calculated
- * The score depends on the average speed and temperature
+ * This activity determine if the Treasure is found and return the score to MainActivity
+ *
+ *  -> This activity measures position, speed & acceleration of the user and also user environment temperature & magnetic field
+ *  -> This activity calculates the orientation(acceleration, magnetic field) and AverageSpeed(speed, time)
+ *  -> If Dist(User,Treasure) < 10 meter, the treasure is considered as found
+ *  -> The score depends on the average speed and temperature like follows: Score = Treasure Score + Temperature(if positive) + AverageSpeed
+ *
+ * !!!Warning: The game is optimized for a normal speed (KML Playback speed: 1x)!!!
  */
 
 public class ActivityTwo extends AppCompatActivity implements SensorEventListener {
-    private static ActivityTwo instance2 = null;
     private Button backButton;
-    private int currentScore = 0;
+    private Integer currentScore = 0;
+    private Integer calculateScore = 0;
+    private Integer negativeTemperature = 0;
 
     private TextView infoBox;
     private TextView distanceBox;
@@ -46,13 +49,13 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
     private double currentDistance = 100;
     private double currentSpeed = 0; // km/h
     private double currentTime = 1;  // s
-    private double currentAvgSpeed = 0;
-    private double currentTemperature = 20;
+    private double currentAvgSpeed = 0; // km/h
+    private double currentTemperature = 0; // °C
 
     private float[] mGravity;     // accelerometer
     private float[] mGeomagnetic; // magnetometer
-    private float currentAzimut;
-    private float treasureAzimut;
+    private float currentAzimut; // degrees
+    private float treasureAzimut; // degrees
 
     private Location treasureLocation = new Location("treasureLocation");
     private LocationManager locationManager;
@@ -73,7 +76,7 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_two);
 
-        // Set id for boxes
+        // Set id for Text- and ImageViews
         infoBox = (TextView)findViewById(R.id.infoBox);
         distanceBox = (TextView)findViewById(R.id.distanceBox);
         temperatureBox = (TextView)findViewById(R.id.temperatureBox);
@@ -81,12 +84,13 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
         avgSpeedBox = (TextView)findViewById(R.id.avgSpeedBox);
         arrow = (ImageView)findViewById(R.id.arrow);
 
-        // get variables from Intent
+        // Get variables from MainActivity using Intent
         Intent intent = getIntent();
         treasureName = intent.getStringExtra("currentTreasureName");
         treasureLongitude = intent.getDoubleExtra("currentLongitude", 0);
         treasureLatitude = intent.getDoubleExtra("currentLatitude", 0);
         treasureMaxCoins = intent.getIntExtra("currentTreasureMaxCoins", 0);
+        currentScore = intent.getIntExtra("currentScore", 0);
 
         infoBox.setText(" " + treasureName + "\n You have : " + Integer.toString(currentScore) + " COINS");
 
@@ -94,7 +98,7 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
         treasureLocation.setLongitude(treasureLongitude);
         treasureLocation.setLatitude(treasureLatitude);
 
-        // Button
+        // Set Back Button
         backButton = (Button)findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +107,7 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
             }
         });
 
-        // Location
+        // Location measurement
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
@@ -133,10 +137,18 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
                     avgSpeedBox.setText("Your average speed: 0 km/h");
                 }
 
-                // Opening new intent
-                if(currentDistance < 4) {
+                // If treasure found go to MainActivity
+                if(currentDistance < 10) {
                     Toast.makeText(getApplicationContext(), "NICE! \n You found it", Toast.LENGTH_SHORT).show();
-                    findTreasure();
+                    if (currentTemperature > 0) {
+                        //Calculate score with temperature and avg speed - Case Temperature positive
+                        calculateScore = Math.round(treasureMaxCoins + Math.round(currentTemperature + (currentAvgSpeed / currentTime)));
+                        findTreasure();
+                    } else {
+                        //Calculate score with temperature and avg speed - Case Temperature negative
+                        calculateScore = Math.round(treasureMaxCoins + Math.round(negativeTemperature + (currentAvgSpeed / currentTime)));
+                        findTreasure();
+                    }
                 }
             }
 
@@ -159,15 +171,11 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
             return;
         }
 
-        // Calculate location every 1 second
-        locationManager.requestLocationUpdates("gps", 1000, 0, locationListener);
+        // Calculate location every 0.5 second
+        locationManager.requestLocationUpdates("gps", 500, 0, locationListener);
         Integer score = intent.getIntExtra("score", 0);
 
-        // Update score
-        currentScore = score + treasureMaxCoins;
-
-        // Sensor
-
+        // Configure sensors
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
         sensorTemperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
@@ -184,17 +192,15 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
         // Opening new intent
         Intent backIntent = new Intent();
         backIntent.putExtra("currentTreasureName", treasureName);
-        backIntent.putExtra("scoreToAdd", 65);
+        backIntent.putExtra("scoreToAdd", calculateScore);
         setResult(RESULT_OK, backIntent);
-        // startActivity(backIntent);
-
         finish();
     }
 
-    // Setup Button "GO!"
+    // Action "BACK" Button
     private void myBackButtonAction() {
         locationManager.removeUpdates(locationListener);
-        
+
         // Opening new intent
         Intent backIntent = new Intent();
         setResult(RESULT_CANCELED, backIntent);
@@ -205,21 +211,10 @@ public class ActivityTwo extends AppCompatActivity implements SensorEventListene
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch(requestCode) { case 10: }
     }
-    //
-
-    //    private int treasureScore = 0;
-    //    //addScore
-    //    public int addScore(int currentScore, int treasureScore) {
-    //
-    //        Integer newScore = this.currentScore += this.treasureScore;
-    //        return newScore;
-    //
-    //    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         // Temperature
-
         if(event.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
             currentTemperature = event.values[0];
             temperatureBox.setText("Temperature: " + Math.round(currentTemperature) + "°C");

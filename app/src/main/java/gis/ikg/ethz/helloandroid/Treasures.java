@@ -1,5 +1,10 @@
 package gis.ikg.ethz.helloandroid;
 
+/**
+ * This class is used to set and get the values of treasure
+ */
+
+
 public class Treasures {
     private String TreasureName; //from csv
     private double Longitude; //from csv
